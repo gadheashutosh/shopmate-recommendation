@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopMate — Product Recommendations</title>
+<style>
+:root{--navy:#07143d;--purple:#6545f5;--blue:#139df4;--ink:#101936;--muted:#687495;--line:#e6eafa;--bg:#f3f6ff;--green:#00b878}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:14px}
+button,input,select{font:inherit}button{cursor:pointer;border:0}
+.topbar{height:64px;background:#07143b;color:#fff;display:flex;align-items:center;gap:32px;padding:0 max(4%,calc((100% - 1440px)/2));position:sticky;top:0;z-index:5;box-shadow:0 5px 18px #07143b22}
+.brand{display:flex;align-items:center;gap:10px;font-size:25px;font-weight:850;letter-spacing:-.7px;white-space:nowrap}.brand-icon{width:37px;height:37px;border-radius:11px;background:linear-gradient(135deg,#a56bff,#4e39f3);display:grid;place-items:center;font-size:23px;box-shadow:0 5px 15px #704aff55}
+.brand span{color:#45baff}.navlinks{display:flex;gap:30px;align-items:center;margin-left:15px;white-space:nowrap}.navlinks a{color:#fff;text-decoration:none;opacity:.93;padding:22px 0}.navlinks a.active{color:#c39bff;border-bottom:2px solid #a96bff}.searchbox{margin-left:auto;width:265px;position:relative}.searchbox input{width:100%;border:1px solid #4d5780;border-radius:30px;background:#222b57;color:#fff;padding:10px 16px 10px 39px;outline:none}.searchbox:before{content:"⌕";position:absolute;left:14px;top:5px;font-size:24px;color:#fff}.topicon{font-size:25px;position:relative;cursor:pointer}.badge{position:absolute;right:-6px;top:-4px;border-radius:20px;background:#ff5d58;font-size:10px;padding:2px 5px;font-weight:800}.avatar{width:35px;height:35px;border-radius:50%;background:linear-gradient(140deg,#7b55ff,#3321b9);display:grid;place-items:center;font-size:19px}
+.hero-wrap{background:linear-gradient(110deg,#06316d,#101e79 52%,#6815b8);border-radius:0 0 22px 22px;padding:15px 3.2% 0;overflow:hidden}
+.hero{max-width:1440px;margin:auto;min-height:288px;border-radius:28px 28px 0 0;background:radial-gradient(ellipse at 62% 70%,#1e70ff88,transparent 30%),linear-gradient(110deg,#04163f 0%,#061c56 48%,#42118b 100%);display:grid;grid-template-columns:1.1fr .95fr 1.1fr;align-items:center;gap:12px;padding:26px 3%;color:white;position:relative;isolation:isolate}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 68% 70%,#00b7ff50,transparent 23%),radial-gradient(circle at 91% 30%,#b42cff55,transparent 24%);z-index:-1}
+.hero-copy{padding:4px 0 12px}.eyebrow{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#d8d3ff}.hero h1{font-size:clamp(29px,3vw,42px);line-height:1.08;letter-spacing:-1.2px;margin:14px 0 13px;max-width:550px}.gradient-text{background:linear-gradient(90deg,#d16cff,#1bbcff);-webkit-background-clip:text;background-clip:text;color:transparent}.hero p{font-size:14px;line-height:1.65;color:#e2e9ff;max-width:490px;margin:0 0 22px}.primary{border-radius:13px;color:white;font-weight:750;background:linear-gradient(100deg,#8249ff,#4e42ff);padding:13px 23px;box-shadow:0 8px 22px #5026d64a}.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}.hero-art{height:260px;position:relative;display:flex;align-items:center;justify-content:center}.orb{position:absolute;border:3px solid #3ecbff;border-left-color:transparent;border-bottom-color:transparent;width:220px;height:180px;border-radius:50%;transform:rotate(-28deg);filter:drop-shadow(0 0 10px #00baff)}.device{position:absolute;display:grid;place-items:center;filter:drop-shadow(0 18px 14px #0008)}.laptop{font-size:93px;left:2%;bottom:26px;transform:rotate(-5deg)}.headphones{font-size:112px;top:0;left:38%;transform:rotate(8deg)}.phone{font-size:73px;right:2%;bottom:35px;transform:rotate(7deg)}.watch{font-size:51px;left:35%;bottom:4px}.shoe{font-size:66px;right:21%;bottom:3px;transform:rotate(-13deg)}.preference-box{background:#1b245bdb;border:1px solid #8d8bd566;border-radius:22px;padding:22px;box-shadow:0 18px 38px #050a3033}.preference-box h2{font-size:18px;margin:0 0 5px}.preference-box>p{font-size:12px;color:#dbe1ff;margin:0 0 15px}.pref-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pref-select{border-radius:11px;background:#fff;color:#3d496c;padding:11px 12px;min-width:0;display:flex;gap:10px;align-items:center}.pref-select .symbol{font-size:20px}.pref-select small{display:block;color:#7a84a1;font-size:10px;margin-bottom:3px}.pref-select select{border:0;background:transparent;color:#27345d;outline:0;width:100%;font-size:12px;min-width:0}.recommend-btn{width:100%;margin-top:12px;padding:13px;border-radius:12px;background:linear-gradient(100deg,#753cff,#078cf5);color:#fff;font-weight:800}
+.categories{max-width:1440px;margin:14px auto 20px;padding:0 3.1%;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px}.category{background:#fff;border:1px solid #edf0fb;border-radius:15px;min-height:112px;text-align:center;padding:13px 7px 10px;box-shadow:0 5px 18px #2a3d7710;cursor:pointer;transition:.2s}.category:hover,.category.selected{border-color:#a99aff;transform:translateY(-2px);box-shadow:0 8px 22px #635bff1b}.category .emoji{font-size:29px;margin-bottom:6px}.category b{display:block;font-size:12px;margin-bottom:4px}.category small{font-size:10px;line-height:1.4;color:#65708f}
+.content{max-width:1440px;margin:0 auto;padding:0 3.1% 34px;display:grid;grid-template-columns:230px minmax(0,1fr) 220px;gap:13px;align-items:start}.panel{background:#fff;border:1px solid #e9edfa;border-radius:15px;box-shadow:0 5px 18px #2a3d7708}.filters{padding:17px 16px}.panel-title{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:850;margin-bottom:17px}.text-btn{background:transparent;color:#2367ff;font-size:11px;padding:0}.filter-label{font-weight:750;font-size:11px;margin:17px 0 9px}.range{width:100%;accent-color:#7251ff}.range-labels{display:flex;justify-content:space-between;color:#6f7b9c;font-size:10px}.filter-options{display:grid;gap:8px}.filter-options label{display:flex;align-items:center;gap:7px;color:#4e5a7b;font-size:11px}.filter-options input{accent-color:#694bff;margin:0}.stars{color:#ff9e17;letter-spacing:-1px;font-size:14px}.brand-search{width:100%;border:1px solid #e2e7f5;border-radius:8px;padding:8px;font-size:11px;outline-color:#9483ff}.center-col{min-width:0}.section{padding:14px 15px 8px;margin-bottom:11px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.section-head h2{font-size:19px;letter-spacing:-.5px;margin:0}.section-head p{font-size:11px;color:#75809e;margin:4px 0 0}.viewall{background:transparent;color:#1766ff;font-size:11px;white-space:nowrap}.product-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px}.product{border:1px solid #e3e8f9;border-radius:14px;overflow:hidden;min-width:0;background:#fff;transition:.2s}.product:hover{transform:translateY(-3px);box-shadow:0 10px 22px #25366c12}.product-top{height:122px;background:linear-gradient(145deg,#f5f8ff,#fff);position:relative;display:grid;place-items:center}.product-emoji{font-size:62px;filter:drop-shadow(0 7px 5px #1c25521a)}.match{position:absolute;top:10px;left:10px;border-radius:20px;background:#00b77a;color:#fff;font-size:10px;font-weight:850;padding:5px 8px}.heart{position:absolute;right:9px;top:7px;background:transparent;font-size:22px;color:#1d294a;padding:0}.product-body{padding:9px 10px 11px}.product h3{font-size:11px;margin:0 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rating-row{display:flex;align-items:center;gap:5px;font-size:10px;color:#667392;white-space:nowrap}.rating-row .stars{font-size:13px}.price-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:8px 0}.price{font-size:14px;font-weight:850}.old-price{font-size:10px;color:#a1a8ba;text-decoration:line-through}.discount{font-size:10px;color:#009f68;background:#dffaf0;padding:4px 6px;border-radius:12px;margin-left:auto}.product-actions{display:flex;gap:6px}.cart-btn{background:#f0edff;color:#593dff;border-radius:8px;width:39px;font-size:18px}.details-btn{flex:1;background:#eeedff;color:#5239ef;border-radius:8px;padding:9px 4px;font-size:10px;font-weight:750}.popular-section{padding:12px 9px 9px}.popular-section .section-head{padding:0 3px;margin-bottom:10px}.popular-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}.popular-item{background:linear-gradient(145deg,#f6f7ff,#fff);border:1px solid #e8ecfb;border-radius:12px;text-align:center;padding:9px 4px;cursor:pointer}.popular-item .emoji{font-size:35px;display:block;margin-bottom:5px}.popular-item b{display:block;font-size:10px}.popular-item a{display:block;color:#4f42ff;text-decoration:none;font-size:10px;margin-top:4px}.right-col{display:grid;gap:12px}.offer{border-radius:15px;min-height:215px;padding:20px 17px;color:#fff;overflow:hidden;position:relative;background:radial-gradient(circle at 95% 25%,#a54aff,transparent 35%),linear-gradient(140deg,#6117a5,#221d86)}.offer h3{font-size:14px;margin:0 0 12px}.offer small{font-size:12px}.offer strong{display:block;font-size:31px;letter-spacing:-1px;white-space:nowrap;margin:2px 0 5px}.offer p{font-size:11px;margin:0 0 15px}.offer button{background:#a44fff;color:#fff;border-radius:9px;padding:10px 13px;font-weight:750;font-size:11px}.offer-art{position:absolute;right:-7px;bottom:0;font-size:76px;filter:drop-shadow(0 8px 9px #0005);transform:rotate(-10deg)}.your-prefs{padding:16px}.your-prefs .panel-title{margin-bottom:14px}.pref-summary{display:grid;gap:12px}.summary-row{display:flex;gap:10px;align-items:center}.summary-icon{width:29px;height:29px;display:grid;place-items:center;border-radius:9px;background:#f0edff;font-size:16px}.summary-row small{display:block;color:#65708f;font-size:10px;margin-bottom:3px}.summary-row b{font-size:11px;font-weight:600}.empty{display:none;text-align:center;color:#667392;padding:35px 10px;grid-column:1/-1}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 18px;border-radius:12px;background:#101936;color:white;display:none;z-index:20;box-shadow:0 8px 25px #0003}
+@media(max-width:1150px){.topbar{gap:18px}.navlinks{gap:15px}.content{grid-template-columns:205px minmax(0,1fr)}.right-col{grid-column:2;grid-template-columns:1fr 1fr}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.categories{grid-template-columns:repeat(4,minmax(0,1fr))}.hero{grid-template-columns:1fr 1fr}.hero-art{display:none}.preference-box{max-width:500px}}
+@media(max-width:720px){.topbar{height:auto;min-height:62px;padding:12px 16px;flex-wrap:wrap;gap:13px}.brand{font-size:22px}.navlinks{order:3;width:100%;overflow:auto;gap:22px;margin:0}.navlinks a{padding:5px 0 8px}.searchbox{width:min(100%,220px);margin-left:auto}.topicon{font-size:21px}.hero-wrap{padding:10px 10px 0}.hero{grid-template-columns:1fr;padding:25px 20px;gap:20px}.hero h1{font-size:34px}.preference-box{padding:17px}.categories{padding:0 12px;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.category{min-height:100px}.content{padding:0 12px 25px;grid-template-columns:1fr}.filters{order:2}.center-col{order:1}.right-col{order:3;grid-column:auto;grid-template-columns:1fr 1fr}.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.popular-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.section-head h2{font-size:17px}}
+@media(max-width:420px){.pref-grid{grid-template-columns:1fr}.right-col{grid-template-columns:1fr}.offer{min-height:185px}.searchbox{order:4;width:100%}.topbar{gap:10px}.categories{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brand-icon">🛍</div>Shop<span>Mate</span></div>
+  <nav class="navlinks"><a href="#home">Home</a><a href="#categories">Categories</a><a href="#deals">Deals</a><a class="active" href="#recommended">Recommended</a><a href="#about">About</a></nav>
+  <div class="searchbox"><input id="search" type="search" placeholder="Search products..." aria-label="Search products"></div>
+  <div class="topicon" title="Saved favourites" onclick="showSaved()">♡<span class="badge" id="favCount">0</span></div>
+  <div class="topicon" title="Cart" onclick="showToast('Your demo cart is ready for products.')">🛒<span class="badge" id="cartCount">0</span></div>
+  <div class="avatar" title="Profile">👤</div>
+</header>
+
+<div class="hero-wrap" id="home">
+<section class="hero">
+  <div class="hero-copy">
+    <div class="eyebrow">✦ &nbsp; AI POWERED</div>
+    <h1>Product <span class="gradient-text">Recommendation</span> System</h1>
+    <p>Find the perfect products based on your preferences, lifestyle and budget with smart recommendations.</p>
+    <button class="primary" onclick="document.querySelector('#recommended').scrollIntoView({behavior:'smooth'})">Explore Products &nbsp; →</button>
+  </div>
+  <div class="hero-art" aria-label="Product collection illustration">
+    <div class="orb"></div><div class="device laptop">💻</div><div class="device headphones">🎧</div><div class="device phone">📱</div><div class="device watch">⌚</div><div class="device shoe">👟</div>
+  </div>
+  <div class="preference-box">
+    <h2>Tell us your preferences</h2><p>Get personalized product recommendations</p>
+    <div class="pref-grid">
+      <div class="pref-select"><span class="symbol">🛍️</span><div style="flex:1"><small>Category</small><select id="prefCategory"><option value="All">Select Category</option><option>Electronics</option><option>Fashion</option><option>Home & Living</option><option>Fitness</option><option>Books</option><option>Beauty</option><option>Grocery</option></select></div></div>
+      <div class="pref-select"><span class="symbol">⏱️</span><div style="flex:1"><small>Budget (₹)</small><select id="prefBudget"><option value="100000">Select Budget Range</option><option value="1000">Under ₹1,000</option><option value="2500">Under ₹2,500</option><option value="5000">Under ₹5,000</option><option value="10000">Under ₹10,000</option><option value="50000">Under ₹50,000</option></select></div></div>
+      <div class="pref-select"><span class="symbol">🎯</span><div style="flex:1"><small>Purpose</small><select id="purpose"><option value="Daily Use">Select Purpose</option><option>Study & Work</option><option>Fitness</option><option>Entertainment</option><option>Daily Use</option></select></div></div>
+      <div class="pref-select"><span class="symbol">🌿</span><div style="flex:1"><small>Your Preference</small><select id="preference"><option value="Best Value">Select Preference</option><option>Best Value</option><option>Premium Quality</option><option>Most Popular</option><option>Eco Friendly</option></select></div></div>
+    </div>
+    <button class="recommend-btn" id="getRecommendations">✦ &nbsp; Get Recommendations</button>
+  </div>
+</section>
+</div>
+
+<section class="categories" id="categories">
+  <div class="category" data-cat="Electronics"><div class="emoji">💻</div><b>Electronics</b><small>Laptops, Phones,<br>Accessories</small></div>
+  <div class="category" data-cat="Fashion"><div class="emoji">👕</div><b>Fashion</b><small>Men, Women,<br>Footwear</small></div>
+  <div class="category" data-cat="Home & Living"><div class="emoji">🏠</div><b>Home & Living</b><small>Furniture, Decor,<br>Kitchen</small></div>
+  <div class="category" data-cat="Fitness"><div class="emoji">🏋️</div><b>Fitness</b><small>Gym, Sports,<br>Health</small></div>
+  <div class="category" data-cat="Books"><div class="emoji">📚</div><b>Books</b><small>Academic, Novels,<br>Self-Help</small></div>
+  <div class="category" data-cat="Beauty"><div class="emoji">🌸</div><b>Beauty</b><small>Skincare, Makeup,<br>Grooming</small></div>
+  <div class="category" data-cat="Grocery"><div class="emoji">🧺</div><b>Grocery</b><small>Daily Needs,<br>Essentials</small></div>
+  <div class="category" data-cat="All"><div class="emoji">⠿</div><b>More</b><small>Explore All<br>Categories</small></div>
+</section>
+
+<main class="content">
+  <aside class="panel filters">
+    <div class="panel-title">⚲ Filters <button class="text-btn" id="clearFilters">Clear All</button></div>
+    <div class="filter-label">Price Range (₹)</div><input class="range" type="range" id="priceRange" min="0" max="100000" step="500" value="100000"><div class="range-labels"><span>0</span><span id="priceMax">1,00,000</span></div>
+    <div class="filter-label">Category</div>
+    <div class="filter-options" id="categoryChecks">
+      <label><input type="checkbox" value="Electronics"> Electronics (12)</label><label><input type="checkbox" value="Fashion"> Fashion (18)</label><label><input type="checkbox" value="Home & Living"> Home & Living (15)</label><label><input type="checkbox" value="Fitness"> Fitness (10)</label><label><input type="checkbox" value="Books"> Books (14)</label><label><input type="checkbox" value="Beauty"> Beauty (9)</label><label><input type="checkbox" value="Grocery"> Grocery (20)</label>
+    </div>
+    <div class="filter-label">Rating</div><div class="filter-options" id="ratingChecks">
+      <label><input type="radio" name="rating" value="4" > <span class="stars">★★★★☆</span> & above</label><label><input type="radio" name="rating" value="3" > <span class="stars">★★★☆☆</span> & above</label><label><input type="radio" name="rating" value="2"> <span class="stars">★★☆☆☆</span> & above</label><label><input type="radio" name="rating" value="1"> <span class="stars">★☆☆☆☆</span> & above</label>
+    </div>
+    <div class="filter-label">Brand</div><input class="brand-search" id="brandSearch" placeholder="⌕ Search brand...">
+    <div class="filter-options" style="margin-top:8px" id="brandChecks"><label><input type="checkbox" value="Dell"> Dell</label><label><input type="checkbox" value="boAt"> boAt</label><label><input type="checkbox" value="Nike"> Nike</label><label><input type="checkbox" value="Noise"> Noise</label><label><input type="checkbox" value="Apple"> Apple</label></div>
+  </aside>
+
+  <div class="center-col">
+    <section class="panel section" id="recommended">
+      <div class="section-head"><div><h2>🔥 Recommended for You</h2><p>Based on your preferences and browsing behavior</p></div><button class="viewall" id="viewAll">View All →</button></div>
+      <div class="product-grid" id="productGrid"></div><div class="empty" id="empty">No products match these filters. Try changing your preferences.</div>
+    </section>
+    <section class="panel popular-section">
+      <div class="section-head"><h2>Popular Categories</h2><button class="viewall" onclick="resetAndShow()">See All Categories →</button></div>
+      <div class="popular-grid">
+        <div class="popular-item" data-cat="Electronics"><span class="emoji">💻</span><b>Laptops</b><a href="#recommended">View Products →</a></div>
+        <div class="popular-item" data-cat="Electronics"><span class="emoji">📱</span><b>Smartphones</b><a href="#recommended">View Products →</a></div>
+        <div class="popular-item" data-cat="Electronics"><span class="emoji">🎧</span><b>Headphones</b><a href="#recommended">View Products →</a></div>
+        <div class="popular-item" data-cat="Electronics"><span class="emoji">⌚</span><b>Smartwatches</b><a href="#recommended">View Products →</a></div>
+        <div class="popular-item" data-cat="Fashion"><span class="emoji">👟</span><b>Shoes</b><a href="#recommended">View Products →</a></div>
+        <div class="popular-item" data-cat="Books"><span class="emoji">📚</span><b>Books</b><a href="#recommended">View Products →</a></div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="right-col">
+    <section class="offer" id="deals"><h3>Special Offer</h3><small>Up to</small><strong>60% OFF</strong><p>On Top Brands</p><button onclick="showToast('Deals section selected!')">Shop Now →</button><div class="offer-art">🎧⌚</div></section>
+    <section class="panel your-prefs"><div class="panel-title">Your Preferences <button class="text-btn" id="editPrefs">Edit</button></div>
+      <div class="pref-summary"><div class="summary-row"><div class="summary-icon">💻</div><div><small>Category</small><b id="summaryCategory">Electronics</b></div></div><div class="summary-row"><div class="summary-icon">🧡</div><div><small>Budget</small><b id="summaryBudget">₹1,000 - ₹50,000</b></div></div><div class="summary-row"><div class="summary-icon">🎯</div><div><small>Purpose</small><b id="summaryPurpose">Daily Use</b></div></div><div class="summary-row"><div class="summary-icon">🟪</div><div><small>Preference</small><b id="summaryPreference">Best Value</b></div></div></div>
+    </section>
+  </aside>
+</main>
+<footer id="about" style="text-align:center;color:#7a84a1;padding:0 15px 28px;font-size:11px">ShopMate · Product Recommendation System Based on Customer Preferences · Student project demo</footer>
+<div class="toast" id="toast" role="status"></div>
+<script>
+const products=[
+{id:1,name:"Dell Inspiron 15 Laptop",brand:"Dell",category:"Electronics",price:49990,old:59990,off:17,rating:4.6,reviews:"1.2K",match:95,emoji:"💻",desc:"Reliable laptop for study, work and entertainment."},
+{id:2,name:"boAt Airdopes 421 ANC",brand:"boAt",category:"Electronics",price:1599,old:3999,off:60,rating:4.4,reviews:"3.1K",match:92,emoji:"🎧",desc:"Wireless audio with a compact everyday design."},
+{id:3,name:"Nike Running Shoes",brand:"Nike",category:"Fashion",price:4999,old:7995,off:37,rating:4.5,reviews:"2.3K",match:90,emoji:"👟",desc:"Lightweight shoes for running and daily comfort."},
+{id:4,name:"Noise ColorFit Pro 5",brand:"Noise",category:"Electronics",price:2499,old:4999,off:50,rating:4.3,reviews:"5.4K",match:88,emoji:"⌚",desc:"Smartwatch for activity tracking and notifications."},
+{id:5,name:"Samsung Galaxy Smartphone",brand:"Samsung",category:"Electronics",price:18999,old:22999,off:17,rating:4.5,reviews:"4.8K",match:87,emoji:"📱",desc:"A bright display and useful everyday features."},
+{id:6,name:"Study & Coding Books",brand:"Oxford",category:"Books",price:699,old:999,off:30,rating:4.8,reviews:"860",match:86,emoji:"📚",desc:"Helpful learning resources for students and beginners."},
+{id:7,name:"Reusable Fitness Bottle",brand:"EcoFit",category:"Fitness",price:499,old:799,off:38,rating:4.2,reviews:"640",match:84,emoji:"🥤",desc:"Reusable bottle for gym, college and travel."},
+{id:8,name:"Desk Organizer Set",brand:"HomeEase",category:"Home & Living",price:899,old:1299,off:31,rating:4.1,reviews:"420",match:82,emoji:"🗂️",desc:"Organize stationery and keep your desk tidy."},
+{id:9,name:"Everyday Cotton T-Shirt",brand:"UrbanWear",category:"Fashion",price:799,old:1199,off:33,rating:4.2,reviews:"1.1K",match:80,emoji:"👕",desc:"Soft everyday essential with a versatile fit."},
+{id:10,name:"Skincare Essentials Kit",brand:"Glow",category:"Beauty",price:1199,old:1599,off:25,rating:4.3,reviews:"970",match:79,emoji:"🌸",desc:"A simple daily skincare starter set."},
+{id:11,name:"Kitchen Storage Set",brand:"HomeEase",category:"Home & Living",price:1099,old:1499,off:27,rating:4.0,reviews:"510",match:77,emoji:"🏠",desc:"Practical storage containers for kitchen essentials."},
+{id:12,name:"Daily Grocery Pack",brand:"FreshBasket",category:"Grocery",price:599,old:749,off:20,rating:4.1,reviews:"720",match:76,emoji:"🧺",desc:"A sample pack of everyday household essentials."}
+];
+let favourites=new Set(),cart=new Set(),showSavedOnly=false,showAll=false;
+const $=id=>document.getElementById(id),money=n=>"₹"+n.toLocaleString("en-IN");
+function toast(msg){$("toast").textContent=msg;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",2100)}window.showToast=toast;
+function selectedCategories(){return [...document.querySelectorAll('#categoryChecks input:checked')].map(x=>x.value)}
+function render(){
+ const q=$("search").value.toLowerCase().trim(), max=+$("priceRange").value, cats=selectedCategories(), minRating=+$((document.querySelector('input[name="rating"]:checked')||{value:0}).value),brandQ=$("brandSearch").value.toLowerCase().trim();
+ let list=products.filter(p=>(!q||(p.name+" "+p.brand+" "+p.category+" "+p.desc).toLowerCase().includes(q))&&p.price<=max&&(!cats.length||cats.includes(p.category))&&p.rating>=minRating&&(!brandQ||p.brand.toLowerCase().includes(brandQ))&&(!showSavedOnly||favourites.has(p.id)));
+ const chosen=$("prefCategory").value;if(chosen!=="All"&&!cats.length)list=list.filter(p=>p.category===chosen);
+ if(!showAll)list=list.slice(0,4);
+ $("priceMax").textContent=max.toLocaleString("en-IN");$("favCount").textContent=favourites.size;$("cartCount").textContent=cart.size;
+ $("productGrid").innerHTML=list.map(p=>`<article class="product"><div class="product-top"><span class="match">${p.match}% Match</span><button class="heart" aria-label="Save ${p.name}" onclick="toggleFav(${p.id})">${favourites.has(p.id)?"♥":"♡"}</button><div class="product-emoji">${p.emoji}</div></div><div class="product-body"><h3 title="${p.name}">${p.name}</h3><div class="rating-row"><span class="stars">${"★".repeat(Math.floor(p.rating))}${p.rating%1>=.5?"★":"☆"}</span><b>${p.rating}</b><span>(${p.reviews})</span></div><div class="price-row"><span class="price">${money(p.price)}</span><span class="old-price">${money(p.old)}</span><span class="discount">${p.off}% OFF</span></div><div class="product-actions"><button class="cart-btn" title="Add to cart" onclick="addCart(${p.id})">${cart.has(p.id)?"✓":"🛒"}</button><button class="details-btn" onclick="details(${p.id})">View Details</button></div></div></article>`).join("");
+ $("empty").style.display=list.length?"none":"block";
+}
+function toggleFav(id){if(favourites.has(id))favourites.delete(id);else favourites.add(id);render();toast(favourites.has(id)?"Added to favourites":"Removed from favourites")}
+function addCart(id){cart.add(id);render();toast("Product added to your demo cart")}
+function details(id){const p=products.find(x=>x.id===id);toast(p.name+" — "+p.desc)}
+function showSaved(){showSavedOnly=!showSavedOnly;showAll=true;render();$("recommended").scrollIntoView({behavior:"smooth"});toast(showSavedOnly?"Showing saved favourites":"Showing all products")}
+function resetAndShow(){document.querySelectorAll('#categoryChecks input').forEach(x=>x.checked=false);$("prefCategory").value="All";showAll=true;render();$("recommended").scrollIntoView({behavior:"smooth"})}
+window.toggleFav=toggleFav;window.addCart=addCart;window.details=details;window.showSaved=showSaved;window.resetAndShow=resetAndShow;
+$("getRecommendations").addEventListener("click",()=>{const c=$("prefCategory").value;document.querySelectorAll('#categoryChecks input').forEach(x=>x.checked=false);if(c!=="All"){const cb=[...document.querySelectorAll('#categoryChecks input')].find(x=>x.value===c);if(cb)cb.checked=true}const budget=+$("prefBudget").value;$("priceRange").value=budget;$("summaryCategory").textContent=c==="All"?"All Categories":c;$("summaryBudget").textContent=budget>=100000?"Flexible budget":"Up to "+money(budget);$("summaryPurpose").textContent=$("purpose").value;$("summaryPreference").textContent=$("preference").value;showSavedOnly=false;showAll=true;render();$("recommended").scrollIntoView({behavior:"smooth"});toast("Your recommendations have been updated")});
+$("clearFilters").addEventListener("click",()=>{document.querySelectorAll('#categoryChecks input').forEach(x=>x.checked=false);document.querySelectorAll('input[name="rating"]').forEach(x=>x.checked=false);$("priceRange").value=100000;$("brandSearch").value="";$("search").value="";$("prefCategory").value="All";showSavedOnly=false;showAll=false;render()});
+$("viewAll").addEventListener("click",()=>{showAll=!showAll;$("viewAll").textContent=showAll?"Show Less ↑":"View All →";render()});
+$("editPrefs").addEventListener("click",()=>$("prefCategory").focus());
+["search","priceRange","brandSearch"].forEach(id=>$(id).addEventListener(id==="search"||id==="brandSearch"?"input":"input",render));
+document.querySelectorAll('#categoryChecks input,input[name="rating"]').forEach(x=>x.addEventListener("change",render));
+document.querySelectorAll('.category,.popular-item').forEach(el=>el.addEventListener("click",()=>{const cat=el.dataset.cat;document.querySelectorAll('#categoryChecks input').forEach(x=>x.checked=x.value===cat);$("prefCategory").value=cat;showAll=true;showSavedOnly=false;render();$("recommended").scrollIntoView({behavior:"smooth"})}));
+$("prefCategory").addEventListener("change",()=>{});
+render();
+</script>
+</body>
+</html>
